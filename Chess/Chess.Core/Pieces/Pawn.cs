@@ -1,0 +1,81 @@
+﻿using Chess.Core.Interfaces;
+using Chess.Core.Models;
+
+namespace Chess.Core.Pieces;
+
+public class Pawn : ChessPiece
+{
+    // Initialize the Pawn with a starting position
+    public Pawn(IPosition startPosition)
+    {
+        SetCurrentPosition(startPosition);
+    }
+
+    public override bool Move(IPosition to, IBoard board)
+    {
+        // Identify the current position
+        // Retrieve x and y coordinates of the current position
+        var currentPosition = GetCurrentPosition();
+        var fromX = currentPosition.GetX();
+        var fromY = currentPosition.GetY();
+
+        // Identify if it's a first move
+        // Assuming the board is 8x8 and the pawns start at row 1 for white and row 6 for black
+        var isFirstMove = fromY == 1 || fromY == 6;
+
+        // Retrieve x and y coordinates of the target position
+        var targetX = to.GetX();
+        var targetY = to.GetY();
+
+        // Identify if it's in the same x coordinate
+        var horizontalDirection = targetX - fromX == 0;
+
+        // Identify vertical movement
+        var verticalMovement = targetY - fromY;
+
+        // Retrieve the target board position
+        var targetPosition = board.GetPiece(to);
+
+        // Ensure it is in horizontal direction and the target position is empty
+        if (horizontalDirection && targetPosition == null)
+        {
+            // pawn can only move one square forward if it is not the first move
+            // Math.Abs will return the absolute value of the vertical movement
+            // eg if verticalMovement is -1 or 1, it will return 1
+            if (Math.Abs(verticalMovement) == 1)
+            {
+                SetCurrentPosition(to);
+                return true;
+            }
+
+            // pawn can only move two squares forward if it is the first move
+            // Math.Abs will return the absolute value of the vertical movement
+            // eg if verticalMovement is -2 or 2, it will return 2
+            if (isFirstMove && Math.Abs(verticalMovement) == 2)
+            {
+                SetCurrentPosition(to);
+                return true;
+            }
+
+            // Other than the above move, the rest is invalid
+            return false;
+        }
+
+        // Pawn able to to move diagonally to capture an enemy piece
+        // Check if target position is not null and it is an enemy piece
+        if (!horizontalDirection && targetPosition != null && IsEnemyOf(targetPosition))
+        {
+            // pawn can only move one square horizontal
+            // Math.Abs will return the absolute value of the vertical movement
+            // eg if verticalMovement is -1 or 1, it will return 1
+            if (Math.Abs(verticalMovement) == 1)
+            {
+                Attack();
+                SetCurrentPosition(to);
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
