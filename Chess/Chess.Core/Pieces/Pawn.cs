@@ -1,37 +1,56 @@
 ﻿using Chess.Core.Interfaces;
 using Chess.Core.Models;
+using Chess.Core.Models.Enum;
+using System.Drawing;
 
 namespace Chess.Core.Pieces;
 
 public class Pawn : ChessPiece
 {
+    private readonly PieceColor _color;
+
     // Initialize the Pawn with a starting position
-    public Pawn(IPosition startPosition)
+    public Pawn(IPosition startPosition, PieceColor color)
     {
         SetCurrentPosition(startPosition);
+        _color = color;
+    }
+
+    private bool IsWithinBoardBounds(int x, int y)
+    {
+        return x >= 0 && x <= 7 && y >= 0 && y <= 7;
     }
 
     public override bool Move(IPosition to, IBoard board)
     {
+        // Retrieve x and y coordinates of the target position
+        var targetX = to.GetX();
+        var targetY = to.GetY();
+        if (!IsWithinBoardBounds(targetX, targetY))
+        {
+            return false;
+        }
+
         // Identify the current position
         // Retrieve x and y coordinates of the current position
         var currentPosition = GetCurrentPosition();
         var fromX = currentPosition.GetX();
         var fromY = currentPosition.GetY();
 
+        // Prevent backward movement
+        var verticalMovement = targetY - fromY;
+        var direction = (_color == PieceColor.White) ? 1 : -1;
+        if (direction * verticalMovement <= 0)
+        {
+            return false;
+        }
+
         // Identify if it's a first move
         // Assuming the board is 8x8 and the pawns start at row 1 for white and row 6 for black
         var isFirstMove = fromY == 1 || fromY == 6;
 
-        // Retrieve x and y coordinates of the target position
-        var targetX = to.GetX();
-        var targetY = to.GetY();
-
         // Identify if it's in the same x coordinate
         var horizontalDirection = targetX - fromX == 0;
-
-        // Identify vertical movement
-        var verticalMovement = targetY - fromY;
 
         // Retrieve the target board position
         var targetPosition = board.GetPiece(to);
