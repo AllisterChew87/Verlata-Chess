@@ -1,4 +1,4 @@
-# Chess Engine – Pawn Movement
+# Chess Engine ï¿½ Pawn Movement
 
 This project implements chess logic focused on Pawn movement in C#, based on an inherited interface.
 
@@ -21,4 +21,5 @@ All tests are under /Chess.Tests and include:
 ## How to Run
 
 - Clone the project
+- Ensure .NET 8 SDK is installed
 - dotnet test
