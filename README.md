@@ -1,4 +1,4 @@
-# Chess Engine � Pawn Movement
+# Chess Engine - Pawn Movement
 
 This project implements chess logic focused on Pawn movement in C#, based on an inherited interface.
 
